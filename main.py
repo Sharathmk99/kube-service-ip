@@ -3,6 +3,7 @@ from KubeClient import KubeClient
 from MonitorNodes import MonitorNodes
 import os
 
+print("Application is starting....")
 if __name__ == '__main__':
     service_name = os.environ["KUBESERVICEIP_SERVICENAME"]
     namespace_name = os.environ["KUBESERVICEIP_NAMESPACE"]
