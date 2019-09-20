@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-service-ip
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-service-ip
+  template:
+      metadata:
+        labels:
+          app: kube-service-ip
+      spec:
+        priorityClassName: system-cluster-critical
+        containers:
+        - name: "kube-service-ip"
+          image: sharathmk99/kube-service-ip:latest
+          imagePullPolicy: Always
+          env:
+          - name: "KUBESERVICEIP_SERVICENAME"
+            valueFrom:
+              configMapKeyRef:
+                key: "KUBESERVICEIP_SERVICENAME"
+                name: "kube-service-ip-config"
+          - name: "KUBESERVICEIP_NAMESPACE"
+            valueFrom:
+              configMapKeyRef:
+                key: "KUBESERVICEIP_NAMESPACE"
+                name: "kube-service-ip-config"
+        restartPolicy: Always
+        serviceAccountName: kube-service-ip-sa
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-service-ip-sa
+  namespace: kube-system
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kube-service-ip-sa
+  namespace: kube-system
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get","list","watch","patch"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-service-ip-sa
+subjects:
+  - kind: ServiceAccount
+    name: kube-service-ip-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: kube-service-ip-sa
+  apiGroup: rbac.authorization.k8s.io
