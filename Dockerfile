@@ -1,11 +1,10 @@
-FROM python:3.7.4-slim
+FROM python:3
 
 LABEL maintainer="Sharath MK <sharathmk99@gmail.com>"
 
-ENV PYTHONUNBUFFERED=0
 WORKDIR /workdir	
 COPY . ./
 
 RUN pip install kubernetes
 
-ENTRYPOINT [ "python", "./main.py" ]
+ENTRYPOINT [ "python", "main.py" ]
